@@ -1,0 +1,38 @@
+[
+  {
+    "id": 2,
+    "username": "Ajith Kumar",
+    "password": "$2b$10$KLuVziGOhVB.R/mRhUFd1OJHkxaLDBd21nrjGILJQsLEvp5dCCHeS",
+    "plain_password": null,
+    "name": null,
+    "email": null,
+    "role": "TEACHER",
+    "createdAt": "2026-03-12T16:43:43.000Z",
+    "updatedAt": "2026-03-12T16:43:43.000Z",
+    "Teacher": {
+      "id": 1,
+      "user_id": 2,
+      "department_id": 1,
+      "createdAt": "2026-03-12T16:43:43.000Z",
+      "updatedAt": "2026-03-12T16:43:43.000Z"
+    }
+  },
+  {
+    "id": 5,
+    "username": "Vijay Kumar",
+    "password": "$2b$10$gfwCBzIpKRhbLdQIQR8QxezXFtE0IVUReG8FWxd.E5vKTa4a/sP1.",
+    "plain_password": null,
+    "name": null,
+    "email": null,
+    "role": "TEACHER",
+    "createdAt": "2026-03-12T17:04:43.000Z",
+    "updatedAt": "2026-03-12T17:04:43.000Z",
+    "Teacher": {
+      "id": 2,
+      "user_id": 5,
+      "department_id": 2,
+      "createdAt": "2026-03-12T17:04:43.000Z",
+      "updatedAt": "2026-03-12T17:04:43.000Z"
+    }
+  }
+]
