@@ -11,6 +11,7 @@ const AttendanceReports = () => {
   const { register, watch } = useForm();
   
   const selectedClass = watch('class_id');
+  const selectedDate = watch('date');
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -27,10 +28,10 @@ const AttendanceReports = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        let url = '/admin/attendance-reports';
-        if (selectedClass) {
-          url += `?class_id=${selectedClass}`;
-        }
+        let url = '/admin/attendance-reports?';
+        if (selectedClass) url += `class_id=${selectedClass}&`;
+        if (selectedDate) url += `date=${selectedDate}&`;
+        
         const res = await api.get(url);
         setReports(res.data);
       } catch (error) {
@@ -38,7 +39,7 @@ const AttendanceReports = () => {
       }
     };
     fetchReports();
-  }, [selectedClass]);
+  }, [selectedClass, selectedDate]);
 
   return (
     <div className="space-y-10 pb-20">
@@ -61,18 +62,29 @@ const AttendanceReports = () => {
                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Global institutional data</p>
               </div>
            </div>
-           
-           <div className="w-full md:w-72 relative group/select">
-             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/select:text-primary-400 transition-colors" />
-             <select 
-               {...register('class_id')}
-               className="w-full pl-12 pr-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-bold text-sm appearance-none"
-             >
-               <option value="" className="bg-navy-950 text-white">All Academic Batches</option>
-               {classes.map(c => (
-                 <option key={c.id} value={c.id} className="bg-navy-950 text-white">{c.name}</option>
-               ))}
-             </select>
+           <div className="w-full md:flex-1 flex gap-4 flex-col md:flex-row justify-end">
+             <div className="w-full md:w-64 relative group/select">
+               <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/select:text-primary-400 transition-colors" />
+               <select 
+                 {...register('class_id')}
+                 className="w-full pl-12 pr-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-bold text-sm appearance-none"
+               >
+                 <option value="" className="bg-navy-950 text-white">All Academic Batches</option>
+                 {classes.map(c => (
+                   <option key={c.id} value={c.id} className="bg-navy-950 text-white">{c.name}</option>
+                 ))}
+               </select>
+             </div>
+             
+             <div className="w-full md:w-56 relative group/input">
+               <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-primary-400 transition-colors" />
+               <input 
+                 type="date"
+                 {...register('date')}
+                 className="w-full pl-12 pr-6 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all font-bold text-sm [color-scheme:dark]"
+                 placeholder="Select Date"
+               />
+             </div>
            </div>
         </div>
       </section>
@@ -87,7 +99,8 @@ const AttendanceReports = () => {
             <thead>
               <tr className="bg-white/5">
                 <th className="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Chronology</th>
-                <th className="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Scholar Identifier</th>
+                <th className="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Student</th>
+                <th className="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Faculty</th>
                 <th className="px-8 py-5 text-left text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Academic Batch</th>
                 <th className="px-8 py-5 text-right text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Registry Status</th>
               </tr>
@@ -106,7 +119,16 @@ const AttendanceReports = () => {
                        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center mr-3 text-slate-500 font-bold text-xs group-hover:text-primary-400 transition-colors">
                           <User size={16} />
                        </div>
-                       <span className="text-sm font-bold text-white tracking-tight">{record.Student?.User?.name || record.Student?.reg_no}</span>
+                       <div>
+                         <span className="block text-sm font-bold text-white tracking-tight">{record.Student?.User?.name || 'Unknown'}</span>
+                         <span className="block text-xs font-medium text-slate-500">{record.Student?.User?.username || record.Student?.reg_no}</span>
+                       </div>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6 whitespace-nowrap">
+                    <div className="flex items-center text-xs font-medium text-slate-400">
+                      <User size={14} className="mr-2 text-primary-500/50" />
+                      {record.Teacher?.User?.name || 'Not Assigned'}
                     </div>
                   </td>
                   <td className="px-8 py-6 whitespace-nowrap">
@@ -121,7 +143,7 @@ const AttendanceReports = () => {
               ))}
               {reports.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="px-8 py-20 text-center">
+                  <td colSpan="5" className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center">
                        <FileText className="h-12 w-12 text-slate-700 mb-4" />
                        <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">No Intelligence Records Found</p>
